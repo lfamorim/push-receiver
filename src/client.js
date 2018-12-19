@@ -166,7 +166,13 @@ module.exports = class Client extends EventEmitter {
   }
 
   _onDataMessage(object) {
+    this.emit('ON_DATA_MESSAGE', object);
+    
     if (this._persistentIds.includes(object.persistentId)) {
+      return;
+    }
+
+    if (!this._credentials.keys) {
       return;
     }
 

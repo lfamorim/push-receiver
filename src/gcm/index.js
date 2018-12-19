@@ -8,10 +8,10 @@ const { toBase64 } = require('../utils/base64');
 
 // Hack to fix PHONE_REGISTRATION_ERROR #17 when bundled with webpack
 // https://github.com/dcodeIO/protobuf.js#browserify-integration
-protobuf.util.Long = Long
-protobuf.configure()
+protobuf.util.Long = Long;
+protobuf.configure();
 
-const serverKey = toBase64(Buffer.from(fcmKey));
+let serverKey = toBase64(Buffer.from(fcmKey));
 
 const REGISTER_URL = 'https://android.clients.google.com/c2dm/register3';
 const CHECKIN_URL = 'https://android.clients.google.com/checkin';
@@ -22,7 +22,12 @@ let AndroidCheckinResponse;
 module.exports = {
   register,
   checkIn,
+  changeServerKey,
 };
+
+function changeServerKey(newServerKey) {
+  serverKey = newServerKey;
+}
 
 async function register(appId) {
   const options = await checkIn();

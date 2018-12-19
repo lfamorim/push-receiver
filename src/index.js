@@ -6,7 +6,7 @@ module.exports = {
   register,
 };
 
-async function listen(credentials, notificationCallback) {
+async function listen(credentials, dataCallback, notificationCallback) {
   if (!credentials) {
     throw new Error('Missing credentials');
   }
@@ -19,9 +19,15 @@ async function listen(credentials, notificationCallback) {
   if (!credentials.gcm.securityToken) {
     throw new Error('Missing gcm.securityToken in credentials');
   }
+
+  const client = new Client(credentials, credentials.persistentIds);
+  client.on('ON_DATA_MESSAGE', dataCallback);
+
   if (!credentials.keys) {
-    throw new Error('Missing keys object in credentials');
+    client.connect();
+    return client;
   }
+
   if (!credentials.keys.privateKey) {
     throw new Error('Missing keys.privateKey in credentials');
   }
@@ -29,7 +35,6 @@ async function listen(credentials, notificationCallback) {
     throw new Error('Missing keys.authSecret in credentials');
   }
 
-  const client = new Client(credentials, credentials.persistentIds);
   client.on('ON_NOTIFICATION_RECEIVED', notificationCallback);
   client.connect();
   return client;
